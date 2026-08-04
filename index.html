@@ -3,11 +3,19 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Preplyx | WAEC, NECO & JAMB Preparation</title>
+<title>Preplyx</title>
 
 <style>
+
+:root{
+--navy:#13294B;
+--gold:#C8A24D;
+--bg:#F8FAFC;
+--text:#314056;
+--line:#E7EDF5;
+}
 
 *{
 margin:0;
@@ -15,135 +23,119 @@ padding:0;
 box-sizing:border-box;
 }
 
-:root{
-
---primary:#13294B;
---primary-light:#27446F;
---gold:#C9A24E;
---text:#22304A;
---muted:#667085;
---bg:#F8FAFC;
---card:#FFFFFF;
-
-}
-
-html{
-
-scroll-behavior:smooth;
-
-}
-
 body{
-
-font-family:Inter,system-ui,-apple-system,sans-serif;
+font-family:Inter,system-ui,sans-serif;
 background:var(--bg);
 color:var(--text);
-
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:32px;
 }
 
 main{
-
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:40px 24px;
-
-}
-
-.wrapper{
-
-max-width:720px;
+width:100%;
+max-width:760px;
 text-align:center;
-
 }
 
 .logo{
-
 font-size:3rem;
 font-weight:800;
 letter-spacing:-2px;
-color:var(--primary);
+color:var(--navy);
 margin-bottom:18px;
-
 }
 
 .badge{
-
 display:inline-block;
-padding:8px 18px;
-border-radius:999px;
-background:#EEF3FA;
-color:var(--primary);
-font-size:.9rem;
+padding:8px 16px;
+border:1px solid var(--line);
+border-radius:100px;
+font-size:.88rem;
 font-weight:600;
-margin-bottom:32px;
-
+color:var(--navy);
+background:white;
+margin-bottom:36px;
 }
 
 h1{
+font-size:clamp(2.6rem,8vw,4.8rem);
+line-height:1;
+letter-spacing:-3px;
+color:var(--navy);
+margin-bottom:28px;
+font-weight:800;
+}
 
-font-size:clamp(2.5rem,7vw,4.2rem);
-line-height:1.08;
-letter-spacing:-2px;
-margin-bottom:24px;
-color:var(--primary);
+.cta{
+
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+padding:18px 34px;
+
+background:var(--navy);
+color:white;
+
+text-decoration:none;
+font-weight:700;
+
+border-radius:14px;
+
+transition:.2s;
+
+margin-bottom:40px;
+
+}
+
+.cta:hover{
+
+transform:translateY(-2px);
+
+background:#1B3764;
 
 }
 
 p{
 
-font-size:1.15rem;
-line-height:1.9;
-color:var(--muted);
 max-width:620px;
+
 margin:auto;
+
+font-size:1.1rem;
+
+line-height:1.8;
+
+color:#667085;
 
 }
 
 .exams{
 
-margin:38px 0;
+margin-top:34px;
+
+font-size:.95rem;
+
 font-weight:700;
-font-size:1rem;
-color:var(--primary);
-letter-spacing:.5px;
 
-}
+letter-spacing:.18em;
 
-.exams span{
+text-transform:uppercase;
 
 color:var(--gold);
 
 }
 
-.waitlist{
-
-display:inline-block;
-margin-top:10px;
-padding:18px 36px;
-background:var(--primary);
-color:#fff;
-text-decoration:none;
-border-radius:14px;
-font-weight:700;
-font-size:1rem;
-transition:.25s ease;
-
-}
-
-.waitlist:hover{
-
-background:var(--primary-light);
-transform:translateY(-2px);
-
-}
-
 footer{
 
-margin-top:42px;
-font-size:.92rem;
-color:#94A3B8;
+margin-top:60px;
+
+font-size:.9rem;
+
+color:#98A2B3;
 
 }
 
@@ -155,57 +147,45 @@ color:#94A3B8;
 
 <main>
 
-<div class="wrapper">
-
 <div class="logo">
 Preplyx
 </div>
 
 <div class="badge">
-Built for Nigerian Secondary School Students
+Nigeria's Exam Preparation Platform
 </div>
 
 <h1>
 
-Prepare smarter.<br>
+Prepare once.<br>
 
-Pass with confidence.
+Pass confidently.
 
 </h1>
 
+<a href="#waitlist" class="cta">
+
+Join the Waitlist
+
+</a>
+
 <p>
 
-Preplyx is an all in one exam preparation platform designed for Nigerian students. Practice realistic CBT exams, study carefully curated past questions, and build the confidence you need to succeed.
+Study smarter for WAEC, NECO, and JAMB with realistic CBT practice, carefully organized past questions, and progress tracking designed to help you perform at your best.
 
 </p>
 
 <div class="exams">
 
-<span>WAEC</span>
-
-•
-
-<span>NECO</span>
-
-•
-
-<span>JAMB</span>
+WAEC &nbsp; • &nbsp; NECO &nbsp; • &nbsp; JAMB
 
 </div>
-
-<a href="#waitlist" class="waitlist">
-
-Join the Waitlist
-
-</a>
 
 <footer>
 
 Launching soon across Nigeria.
 
 </footer>
-
-</div>
 
 </main>
 
