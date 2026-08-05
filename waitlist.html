@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Join the Waitlist • Preplyx</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+:root{
+
+--navy:#13294B;
+--gold:#C8A24D;
+--bg:#F8FAFC;
+--text:#314056;
+--line:#E7EDF5;
+--success:#16A34A;
+--danger:#DC2626;
+
+}
+
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+
+}
+
+body{
+
+font-family:Inter,sans-serif;
+background:var(--bg);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:30px;
+
+}
+
+.card{
+
+width:100%;
+max-width:520px;
+background:white;
+border:1px solid var(--line);
+border-radius:22px;
+padding:42px;
+
+box-shadow:
+0 20px 60px rgba(19,41,75,.08);
+
+}
+
+.logo{
+
+font-size:2.4rem;
+font-weight:800;
+color:var(--navy);
+text-align:center;
+
+}
+
+.badge{
+
+margin:18px auto 35px;
+
+display:inline-flex;
+padding:8px 15px;
+
+border:1px solid var(--line);
+
+border-radius:999px;
+
+font-size:.85rem;
+
+font-weight:600;
+
+color:var(--navy);
+
+background:#fff;
+
+}
+
+.center{
+
+text-align:center;
+
+}
+
+h1{
+
+font-size:2rem;
+
+line-height:1.2;
+
+color:var(--navy);
+
+margin-bottom:12px;
+
+}
+
+.subtitle{
+
+color:#667085;
+
+line-height:1.7;
+
+margin-bottom:35px;
+
+}
+
+label{
+
+display:block;
+
+margin-bottom:8px;
+
+font-weight:600;
+
+color:var(--navy);
+
+}
+
+input{
+
+width:100%;
+
+padding:16px 18px;
+
+border:1px solid var(--line);
+
+border-radius:14px;
+
+font-size:1rem;
+
+outline:none;
+
+transition:.2s;
+
+margin-bottom:20px;
+
+}
+
+input:focus{
+
+border-color:var(--navy);
+
+box-shadow:0 0 0 4px rgba(19,41,75,.08);
+
+}
+
+button{
+
+width:100%;
+
+padding:17px;
+
+border:none;
+
+border-radius:14px;
+
+background:var(--navy);
+
+color:white;
+
+font-size:1rem;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+button:hover{
+
+background:#1A3968;
+
+transform:translateY(-2px);
+
+}
+
+button:disabled{
+
+opacity:.6;
+
+cursor:not-allowed;
+
+transform:none;
+
+}
+
+.hidden{
+
+display:none;
+
+}
+
+.message{
+
+margin-top:18px;
+
+padding:14px;
+
+border-radius:12px;
+
+font-size:.95rem;
+
+display:none;
+
+}
+
+.success{
+
+background:#ECFDF3;
+
+color:var(--success);
+
+border:1px solid #BBF7D0;
+
+}
+
+.error{
+
+background:#FEF2F2;
+
+color:var(--danger);
+
+border:1px solid #FECACA;
+
+}
+
+footer{
+
+margin-top:28px;
+
+text-align:center;
+
+font-size:.9rem;
+
+color:#98A2B3;
+
+}
+
+.loader{
+
+width:18px;
+
+height:18px;
+
+border:3px solid rgba(255,255,255,.3);
+
+border-top-color:white;
+
+border-radius:50%;
+
+display:inline-block;
+
+animation:spin .8s linear infinite;
+
+vertical-align:middle;
+
+margin-right:8px;
+
+}
+
+@keyframes spin{
+
+to{
+
+transform:rotate(360deg);
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="center">
+
+<div class="logo">
+
+Preplyx
+
+</div>
+
+<div class="badge">
+
+Join the Early Access Waitlist
+
+</div>
+
+<h1>
+
+Be the first to know.
+
+</h1>
+
+<p class="subtitle">
+
+Verify your email address to reserve your place on the Preplyx waitlist. We'll notify you as soon as we launch.
+
+</p>
+
+</div>
+
+<label>Email Address</label>
+
+<input
+type="email"
+id="email"
+placeholder="you@example.com"
+autocomplete="email">
+
+<button id="sendBtn">
+
+Send Verification Code
+
+</button>
+
+<div id="otpSection" class="hidden">
+
+<label style="margin-top:30px">
+
+Verification Code
+
+</label>
+
+<input
+type="text"
+id="otp"
+placeholder="Enter the 6 digit code">
+
+<button id="joinBtn">
+
+Join Waitlist
+
+</button>
+
+</div>
+
+<div
+id="message"
+class="message">
+
+</div>
+
+<footer>
+
+© 2026 Preplyx
+
+</footer>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://kjbgjunvvjultctgcuqn.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_vMdEkv7aEakXl4qi5sJ0aA_jkjEvcdO";
+
+const supabase =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+const email =
+document.getElementById("email");
+
+const otp =
+document.getElementById("otp");
+
+const sendBtn =
+document.getElementById("sendBtn");
+
+const joinBtn =
+document.getElementById("joinBtn");
+
+const otpSection =
+document.getElementById("otpSection");
+
+const message =
+document.getElementById("message");
+
+function showMessage(text,type){
+
+message.style.display="block";
+
+message.className="message "+type;
+
+message.innerHTML=text;
+
+}
