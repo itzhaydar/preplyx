@@ -457,7 +457,7 @@ setLoading(sendBtn,"Sending Code...");
 
 try{
 
-const {data:existing}=await supabase
+const {data:existing}=await supabaseClient
 .from("waitlist")
 .select("id")
 .eq("email",userEmail)
