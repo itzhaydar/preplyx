@@ -330,28 +330,11 @@ autocomplete="email">
 
 <button id="sendBtn">
 
-Send Verification Code
-
+Join the waitlist
 </button>
 
-<div id="otpSection" class="hidden">
 
-<label style="margin-top:30px">
 
-Verification Code
-
-</label>
-
-<input
-type="text"
-id="otp"
-placeholder="Enter the 6 digit code">
-
-<button id="joinBtn">
-
-Join Waitlist
-
-</button>
 
 </div>
 
@@ -370,248 +353,98 @@ class="message">
 </div>
 
 <script>
-
-const SUPABASE_URL =
-"https://kjbgjunvvjultctgcuqn.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_vMdEkv7aEakXl4qi5sJ0aA_jkjEvcdO";
-
 const { createClient } = supabase;
 
 const supabaseClient = createClient(
   "https://kjbgjunvvjultctgcuqn.supabase.co",
   "sb_publishable_vMdEkv7aEakXl4qi5sJ0aA_jkjEvcdO"
-
 );
 
-const email =
-document.getElementById("email");
+const email = document.getElementById("email");
+const sendBtn = document.getElementById("sendBtn");
+const otpSection = document.getElementById("otpSection");
+const message = document.getElementById("message");
 
-const otp =
-document.getElementById("otp");
+otpSection.remove();
 
-const sendBtn =
-document.getElementById("sendBtn");
-
-const joinBtn =
-document.getElementById("joinBtn");
-
-const otpSection =
-document.getElementById("otpSection");
-
-const message =
-document.getElementById("message");
-
-function showMessage(text,type){
-
-message.style.display="block";
-
-message.className="message "+type;
-
-message.innerHTML=text;
-
+function showMessage(text, type) {
+    message.style.display = "block";
+    message.className = "message " + type;
+    message.innerHTML = text;
 }
 
-  function setLoading(button,text){
-
-button.disabled=true;
-
-button.innerHTML='<span class="loader"></span>'+text;
-
+function setLoading(button, text) {
+    button.disabled = true;
+    button.innerHTML = '<span class="loader"></span>' + text;
 }
 
-function resetButton(button,text){
-
-button.disabled=false;
-
-button.innerHTML=text;
-
+function resetButton(button, text) {
+    button.disabled = false;
+    button.innerHTML = text;
 }
 
-sendBtn.addEventListener("click",async()=>{
+sendBtn.addEventListener("click", async () => {
 
-message.style.display="none";
+    message.style.display = "none";
 
-const userEmail=email.value.trim().toLowerCase();
+    const userEmail = email.value.trim().toLowerCase();
 
-if(userEmail===""){
+    if (!userEmail) {
+        showMessage("Please enter your email address.", "error");
+        return;
+    }
 
-showMessage("Please enter your email address.","error");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-return;
+    if (!emailRegex.test(userEmail)) {
+        showMessage("Please enter a valid email address.", "error");
+        return;
+    }
 
-}
+    setLoading(sendBtn, "Joining...");
 
-const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    try {
 
-if(!emailRegex.test(userEmail)){
+        const { data: existing } = await supabaseClient
+            .from("waitlist")
+            .select("id")
+            .eq("email", userEmail)
+            .maybeSingle();
 
-showMessage("Please enter a valid email address.","error");
+        if (existing) {
+            resetButton(sendBtn, "Join Waitlist");
+            showMessage("This email is already on the waitlist.", "error");
+            return;
+        }
 
-return;
+        const { error } = await supabaseClient
+            .from("waitlist")
+            .insert({
+                email: userEmail
+            });
 
-}
+        if (error) {
+            resetButton(sendBtn, "Join Waitlist");
+            showMessage(error.message, "error");
+            return;
+        }
 
-setLoading(sendBtn,"Sending Code...");
+        showMessage(
+            "🎉 You're officially on the Preplyx waitlist!",
+            "success"
+        );
 
-try{
+        email.disabled = true;
+        sendBtn.style.display = "none";
 
-const {data:existing}=await supabaseClient
-.from("waitlist")
-.select("id")
-.eq("email",userEmail)
-.maybeSingle();
+    } catch (err) {
 
-if(existing){
+        resetButton(sendBtn, "Join Waitlist");
+        showMessage(err.message, "error");
 
-resetButton(sendBtn,"Send Verification Code");
-
-showMessage("This email is already on the waitlist.","error");
-
-return;
-
-}
-
-const {error}=await supabaseClient.auth.signInWithOtp({
-
-email:userEmail,
-
-options:{
-
-shouldCreateUser:true
-
-}
+    }
 
 });
-
-resetButton(sendBtn,"Send Again");
-
-if(error){
-
-showMessage(error.message,"error");
-
-return;
-
-}
-
-otpSection.classList.remove("hidden");
-
-showMessage("A verification code has been sent to your email.","success");
-
-}catch(err){
-
-resetButton(sendBtn,"Send Verification Code");
-
-showMessage(err.message,"error");
-
-}
-
-});
-
-joinBtn.addEventListener("click",async()=>{
-
-message.style.display="none";
-
-const userEmail=email.value.trim().toLowerCase();
-
-const code=otp.value.trim();
-
-if(code===""){
-
-showMessage("Enter the verification code.","error");
-
-return;
-
-}
-
-setLoading(joinBtn,"Verifying...");
-
-try{
-
-const {error:verifyError}=await supabaseClient.auth.verifyOtp({
-
-email:userEmail,
-
-token:code,
-
-type:"email"
-
-});
-
-if(verifyError){
-
-resetButton(joinBtn,"Join Waitlist");
-
-showMessage("Incorrect or expired verification code.","error");
-
-return;
-
-}
-
-const {data:{user}}=await supabaseClient.auth.getUser();
-
-if(!user){
-
-resetButton(joinBtn,"Join Waitlist");
-
-showMessage("Verification failed.","error");
-
-return;
-
-}
-
-const {error:insertError}=await supabase
-.from("waitlist")
-.insert({
-
-email:userEmail
-
-});
-
-  if(insertError){
-
-if(insertError.code==="23505"){
-
-resetButton(joinBtn,"Join Waitlist");
-
-showMessage("This email is already on the waitlist.","error");
-
-return;
-
-}
-
-resetButton(joinBtn,"Join Waitlist");
-
-showMessage(insertError.message,"error");
-
-return;
-
-}
-
-showMessage(
-"🎉 You're officially on the Preplyx waitlist! We'll let you know as soon as we launch.",
-"success"
-);
-
-email.disabled=true;
-otp.disabled=true;
-
-sendBtn.style.display="none";
-joinBtn.style.display="none";
-
-await supabaseClient.auth.signOut();
-
-}catch(err){
-
-resetButton(joinBtn,"Join Waitlist");
-
-showMessage(err.message,"error");
-
-}
-
-});
-
 </script>
 
 </body>
