@@ -399,7 +399,7 @@ function showMessage(text, type) {
 function setLoading(button, text) {
     button.disabled = true;
     button.innerHTML = '<span class="loader"></span>' + text;
-  sendBtn.style.display = "none";
+
 
 }
 
@@ -461,6 +461,7 @@ sendBtn.addEventListener("click", async () => {
 
         email.disabled = true;
         sendBtn.style.display = "none";
+      shareBtn.classList.remove("hidden");
 
     } catch (err) {
 
@@ -470,15 +471,27 @@ sendBtn.addEventListener("click", async () => {
     }
 
 });
-  shareBtn.addEventListener("click", async () => {
+shareBtn.addEventListener("click", async () => {
 
-    await navigator.clipboard.writeText(window.location.href);
+    const url = window.location.href;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: "Join the Preplyx Waitlist",
+                text: "I'm on the Preplyx waitlist. Join me!",
+                url
+            });
+            return;
+        } catch {}
+    }
+
+    await navigator.clipboard.writeText(url);
 
     showMessage(
         "Link copied! Invite your friends to join the waitlist.",
         "success"
     );
-
 });
 </script>
 
