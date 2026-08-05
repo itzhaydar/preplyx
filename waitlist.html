@@ -377,10 +377,12 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_vMdEkv7aEakXl4qi5sJ0aA_jkjEvcdO";
 
-const supabase =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+const { createClient } = supabase;
+
+const supabaseClient = createClient(
+  "https://kjbgjunvvjultctgcuqn.supabase.co",
+  "YOUR_PUBLISHABLE_KEY"
+
 );
 
 const email =
@@ -471,7 +473,7 @@ return;
 
 }
 
-const {error}=await supabase.auth.signInWithOtp({
+const {error}=await supabaseClient.auth.signInWithOtp({
 
 email:userEmail,
 
@@ -527,7 +529,7 @@ setLoading(joinBtn,"Verifying...");
 
 try{
 
-const {error:verifyError}=await supabase.auth.verifyOtp({
+const {error:verifyError}=await supabaseClient.auth.verifyOtp({
 
 email:userEmail,
 
@@ -547,7 +549,7 @@ return;
 
 }
 
-const {data:{user}}=await supabase.auth.getUser();
+const {data:{user}}=await supabaseClient.auth.getUser();
 
 if(!user){
 
@@ -598,7 +600,7 @@ otp.disabled=true;
 sendBtn.style.display="none";
 joinBtn.style.display="none";
 
-await supabase.auth.signOut();
+await supabaseClient.auth.signOut();
 
 }catch(err){
 
