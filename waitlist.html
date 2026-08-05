@@ -355,7 +355,6 @@ autocomplete="email">
 Join the waitlist
 </button>
 
-</input>
 
 <div
 id="message"
@@ -378,6 +377,7 @@ class="message">
 </div>
 
 <script>
+  
 const { createClient } = supabase;
 
 const supabaseClient = createClient(
@@ -387,7 +387,8 @@ const supabaseClient = createClient(
 
 const email = document.getElementById("email");
 const sendBtn = document.getElementById("sendBtn");
-
+const message = document.getElementById("message");
+const shareBtn = document.getElementById("shareBtn");
 
 function showMessage(text, type) {
     message.style.display = "block";
@@ -398,6 +399,8 @@ function showMessage(text, type) {
 function setLoading(button, text) {
     button.disabled = true;
     button.innerHTML = '<span class="loader"></span>' + text;
+  sendBtn.style.display = "none";
+
 }
 
 function resetButton(button, text) {
@@ -465,6 +468,16 @@ sendBtn.addEventListener("click", async () => {
         showMessage(err.message, "error");
 
     }
+
+});
+  shareBtn.addEventListener("click", async () => {
+
+    await navigator.clipboard.writeText(window.location.href);
+
+    showMessage(
+        "Link copied! Invite your friends to join the waitlist.",
+        "success"
+    );
 
 });
 </script>
