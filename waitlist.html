@@ -411,3 +411,207 @@ message.className="message "+type;
 message.innerHTML=text;
 
 }
+
+  function setLoading(button,text){
+
+button.disabled=true;
+
+button.innerHTML='<span class="loader"></span>'+text;
+
+}
+
+function resetButton(button,text){
+
+button.disabled=false;
+
+button.innerHTML=text;
+
+}
+
+sendBtn.addEventListener("click",async()=>{
+
+message.style.display="none";
+
+const userEmail=email.value.trim().toLowerCase();
+
+if(userEmail===""){
+
+showMessage("Please enter your email address.","error");
+
+return;
+
+}
+
+const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if(!emailRegex.test(userEmail)){
+
+showMessage("Please enter a valid email address.","error");
+
+return;
+
+}
+
+setLoading(sendBtn,"Sending Code...");
+
+try{
+
+const {data:existing}=await supabase
+.from("waitlist")
+.select("id")
+.eq("email",userEmail)
+.maybeSingle();
+
+if(existing){
+
+resetButton(sendBtn,"Send Verification Code");
+
+showMessage("This email is already on the waitlist.","error");
+
+return;
+
+}
+
+const {error}=await supabase.auth.signInWithOtp({
+
+email:userEmail,
+
+options:{
+
+shouldCreateUser:true
+
+}
+
+});
+
+resetButton(sendBtn,"Send Again");
+
+if(error){
+
+showMessage(error.message,"error");
+
+return;
+
+}
+
+otpSection.classList.remove("hidden");
+
+showMessage("A verification code has been sent to your email.","success");
+
+}catch(err){
+
+resetButton(sendBtn,"Send Verification Code");
+
+showMessage(err.message,"error");
+
+}
+
+});
+
+joinBtn.addEventListener("click",async()=>{
+
+message.style.display="none";
+
+const userEmail=email.value.trim().toLowerCase();
+
+const code=otp.value.trim();
+
+if(code===""){
+
+showMessage("Enter the verification code.","error");
+
+return;
+
+}
+
+setLoading(joinBtn,"Verifying...");
+
+try{
+
+const {error:verifyError}=await supabase.auth.verifyOtp({
+
+email:userEmail,
+
+token:code,
+
+type:"email"
+
+});
+
+if(verifyError){
+
+resetButton(joinBtn,"Join Waitlist");
+
+showMessage("Incorrect or expired verification code.","error");
+
+return;
+
+}
+
+const {data:{user}}=await supabase.auth.getUser();
+
+if(!user){
+
+resetButton(joinBtn,"Join Waitlist");
+
+showMessage("Verification failed.","error");
+
+return;
+
+}
+
+const {error:insertError}=await supabase
+.from("waitlist")
+.insert({
+
+email:userEmail
+
+});
+
+  if(insertError){
+
+if(insertError.code==="23505"){
+
+resetButton(joinBtn,"Join Waitlist");
+
+showMessage("This email is already on the waitlist.","error");
+
+return;
+
+}
+
+resetButton(joinBtn,"Join Waitlist");
+
+showMessage(insertError.message,"error");
+
+return;
+
+}
+
+showMessage(
+"🎉 You're officially on the Preplyx waitlist! We'll let you know as soon as we launch.",
+"success"
+);
+
+email.disabled=true;
+otp.disabled=true;
+
+sendBtn.style.display="none";
+joinBtn.style.display="none";
+
+await supabase.auth.signOut();
+
+}catch(err){
+
+resetButton(joinBtn,"Join Waitlist");
+
+showMessage(err.message,"error");
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
